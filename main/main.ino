@@ -52,19 +52,20 @@ void readSpectrum(int *spectrumArray)
 
 void updateLEDS(int *spectrumArray,int max )
 {
-  int i;
-  for (i = 0; i < 60; i += 3) {
-    strip.setPixelColor(i, 0, 240, 240, 0);
-    strip.setPixelColor(i + 1, 240, 240, 0);
-    strip.setPixelColor(i + 2, 230, 0, 0);
-    strip.show();
-    delay(100);
+  int i,j;
+  int colorVal = 240*(spectrumArray[0])/max;
+  //Serial.print(colorVal);
+  //Serial.print(" ");
+  //Serial.print(spectrumArray[0]);
+  for (i = 0; i < 10; i++) {
+    strip.setPixelColor( i, colorVal, colorVal, 0);
   }
+
+  strip.show();
 }
 
 void loop()
 {
-  
   readSpectrum(&spectrumValue[0]);
   for (int i = 0; i < 7; i++)
   {
@@ -75,6 +76,6 @@ void loop()
  
   Serial.println();
   // determine intensity of sound, check for max?
-  //updateLEDS(spectrumValue[0]);
-  delay(200);
+  updateLEDS(&spectrumValue[0],500);
+  delay(100);
 }
