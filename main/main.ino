@@ -2,11 +2,11 @@
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
-int analogPin = A1;    // read from multiplexer using analog input 0
+int analogPin = A0;    // read from multiplexer using analog input 0
 int resetPin = 7;      // reset is attached to digital pin 3
 int strobePin = 8;     // strobe is attached to digital pin 2
 #define PIN_LEDSTRIP 9 // Digital signal connected to green wire on LED strip, white wire GND, red wire 5V
-int spectrumValue[7];  // to hold analog values
+long spectrumValue[7];  // to hold analog values
 int maxVal = 1023;     // max of all spectrumValue
 
 // Parameter 1 = number of pixels in strip
@@ -38,30 +38,91 @@ void setup()
  strip.show(); // Initialize all pixels to 'off'
 }
 
-void readSpectrum(int *spectrumArray)
+void readSpectrum(long *spectrumArray)
 {
  digitalWrite(resetPin, HIGH);
  digitalWrite(resetPin, LOW);
+ delayMicroseconds(20);
  for (int i = 0; i < 7; i++){
    digitalWrite(strobePin, LOW);
    delayMicroseconds(30); // to allow the output to settle
    spectrumValue[i] = analogRead(analogPin);
    digitalWrite(strobePin, HIGH);
+   delayMicroseconds(20);
  }
 }
 
-void updateLEDS(int *spectrumArray,int max )
+void updateLEDS(long *spectrumArray,int max )
 {
   int i,j;
-  int colorVal = 240*(spectrumArray[0])/max;
-  //Serial.print(colorVal);
-  //Serial.print(" ");
-  //Serial.print(spectrumArray[0]);
-  for (i = 0; i < 10; i++) {
+  int colorVal = 250*spectrumArray[0]/max;
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  Serial.print("Val: ");
+  Serial.print(colorVal);
+  Serial.print(" ");
+  for (i = 0; i < 9; i++) {
     strip.setPixelColor( i, colorVal, colorVal, 0);
   }
-
+  colorVal = 250*spectrumArray[1]/max;
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  Serial.print(colorVal);
+  Serial.print(" ");
+  
+  for (i = 9; i < 18; i++) {
+    strip.setPixelColor( i, 0, colorVal, colorVal);
+  }
+  colorVal = 250*spectrumArray[2]/max;
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  Serial.print(colorVal);
+  Serial.print(" ");
+  
+  for (i = 18; i < 26; i++) {
+    strip.setPixelColor( i, colorVal, colorVal, 0);
+  }
+  colorVal = 250*spectrumArray[3]/max;
+  Serial.print(colorVal);
+  Serial.print(" ");
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  for (i = 26; i < 34; i++) {
+    strip.setPixelColor( i, colorVal, 0, colorVal);
+  }
+  colorVal = 250*spectrumArray[4]/max;
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  Serial.print(colorVal);
+  Serial.print(" ");
+  for (i = 34; i < 42; i++) {
+    strip.setPixelColor( i, 0, colorVal, 0);
+  }
+  colorVal = 250*spectrumArray[5]/max;
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  Serial.print(colorVal);
+  Serial.print(" ");
+  for (i = 42; i < 51; i++) {
+    strip.setPixelColor( i, colorVal, 0, colorVal);
+  }
+  colorVal = 250*spectrumArray[5]/max;
+  if (colorVal < 50)  {
+    colorVal = 0;
+    }
+  Serial.print(colorVal);
+  Serial.print(" ");
+  for (i = 51; i < 60; i++) {
+    strip.setPixelColor( i, 0, colorVal, colorVal);
+  }
   strip.show();
+  delay(5);
 }
 
 void loop()
@@ -71,11 +132,10 @@ void loop()
   {
     Serial.print(" ");
     Serial.print(spectrumValue[i]);   
-    digitalWrite(strobePin, HIGH);
   }
  
   Serial.println();
   // determine intensity of sound, check for max?
-  updateLEDS(&spectrumValue[0],500);
-  delay(100);
+  updateLEDS(&spectrumValue[0],1023);
+  delay(50);
 }
