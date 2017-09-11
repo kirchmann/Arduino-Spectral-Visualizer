@@ -23,106 +23,70 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, PIN_LEDSTRIP, NEO_GRB + NEO_KHZ4
 // pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
-// Funkar med signalgenerator från mobilen. 
+// Funkar med signalgenerator från mobilen.
 //http://www.szynalski.com/tone-generator/
 void setup()
 {
- Serial.begin(9600);
- pinMode(analogPin, INPUT);
- pinMode(strobePin, OUTPUT);
- pinMode(resetPin, OUTPUT);
- digitalWrite(resetPin, HIGH);
- digitalWrite(resetPin, LOW);
- digitalWrite(strobePin, HIGH);
- strip.begin();
- strip.show(); // Initialize all pixels to 'off'
+  Serial.begin(9600);
+  pinMode(analogPin, INPUT);
+  pinMode(strobePin, OUTPUT);
+  pinMode(resetPin, OUTPUT);
+  digitalWrite(resetPin, HIGH);
+  digitalWrite(resetPin, LOW);
+  digitalWrite(strobePin, HIGH);
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
 }
 
 void readSpectrum(long *spectrumArray)
 {
- digitalWrite(resetPin, HIGH);
- digitalWrite(resetPin, LOW);
- delayMicroseconds(20);
- for (int i = 0; i < 7; i++){
-   digitalWrite(strobePin, LOW);
-   delayMicroseconds(30); // to allow the output to settle
-   spectrumValue[i] = analogRead(analogPin);
-   digitalWrite(strobePin, HIGH);
-   delayMicroseconds(20);
- }
+  digitalWrite(resetPin, HIGH);
+  digitalWrite(resetPin, LOW);
+  delayMicroseconds(20);
+  for (int i = 0; i < 7; i++) {
+    digitalWrite(strobePin, LOW);
+    delayMicroseconds(30); // to allow the output to settle
+    spectrumValue[i] = analogRead(analogPin);
+    spectrumValue[i]=map(spectrumValue[i], 0,1023,0,255);
+    digitalWrite(strobePin, HIGH);
+    delayMicroseconds(20);
+  }
 }
 
-void updateLEDS(long *spectrumArray,int max )
+void updateLEDS(long *spectrumArray, int max )
 {
-  int i,j;
-  int colorVal = 250*spectrumArray[0]/max;
-  if (colorVal < 50)  {
+  int i, j;
+  int threshold = 37;
+  int colorVal = spectrumArray[1];
+  if (colorVal < threshold)  {
     colorVal = 0;
-    }
-  Serial.print("Val: ");
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 0; i < 9; i++) {
-    strip.setPixelColor( i, colorVal, colorVal, 0);
   }
-  colorVal = 250*spectrumArray[1]/max;
-  if (colorVal < 50)  {
-    colorVal = 0;
-    }
   Serial.print(colorVal);
   Serial.print(" ");
-  
-  for (i = 9; i < 18; i++) {
-    strip.setPixelColor( i, 0, colorVal, colorVal);
+
+  for (i = 0; i < 20; i++) {
+    strip.setPixelColor( i, colorVal, 20, 20);
   }
-  colorVal = 250*spectrumArray[2]/max;
-  if (colorVal < 50)  {
+  colorVal = spectrumArray[4];
+  if (colorVal < threshold)  {
     colorVal = 0;
-    }
-  Serial.print(colorVal);
-  Serial.print(" ");
-  
-  for (i = 18; i < 26; i++) {
-    strip.setPixelColor( i, colorVal, colorVal, 0);
   }
-  colorVal = 250*spectrumArray[3]/max;
   Serial.print(colorVal);
   Serial.print(" ");
-  if (colorVal < 50)  {
-    colorVal = 0;
-    }
-  for (i = 26; i < 34; i++) {
-    strip.setPixelColor( i, colorVal, 0, colorVal);
+  for (i = 20; i < 40; i++) {
+    strip.setPixelColor( i, 0, 0, colorVal);
   }
-  colorVal = 250*spectrumArray[4]/max;
-  if (colorVal < 50)  {
+  colorVal = spectrumArray[5];
+  if (colorVal < threshold-5)  {
     colorVal = 0;
-    }
+  }
   Serial.print(colorVal);
   Serial.print(" ");
-  for (i = 34; i < 42; i++) {
+  for (i = 40; i < 60; i++) {
     strip.setPixelColor( i, 0, colorVal, 0);
   }
-  colorVal = 250*spectrumArray[5]/max;
-  if (colorVal < 50)  {
-    colorVal = 0;
-    }
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 42; i < 51; i++) {
-    strip.setPixelColor( i, colorVal, 0, colorVal);
-  }
-  colorVal = 250*spectrumArray[5]/max;
-  if (colorVal < 50)  {
-    colorVal = 0;
-    }
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 51; i < 60; i++) {
-    strip.setPixelColor( i, 0, colorVal, colorVal);
-  }
   strip.show();
-  delay(5);
+  delay(15);
 }
 
 void loop()
@@ -131,11 +95,11 @@ void loop()
   for (int i = 0; i < 7; i++)
   {
     Serial.print(" ");
-    Serial.print(spectrumValue[i]);   
+    Serial.print(spectrumValue[i]);
   }
- 
+
   Serial.println();
   // determine intensity of sound, check for max?
-  updateLEDS(&spectrumValue[0],1023);
-  delay(50);
+  updateLEDS(&spectrumValue[0], 700);
+  delay(40);
 }
