@@ -42,7 +42,7 @@ void setup()
 
 void readSpectrum(long *spectrumArray)
 {
-  int threshold = 35;
+  int threshold = 21;
   digitalWrite(resetPin, HIGH);
   delay(5);
   digitalWrite(resetPin, LOW);
@@ -65,57 +65,60 @@ void updateLEDS(long *spectrumArray, int max )
   int upperLim;
   int maxVal = 80;
   int colorVal = spectrumArray[0];
-  upperLim = map(colorVal,0,255,0,10);
+  upperLim = map(colorVal,0,70,0,10);
   for (i = 0; i < upperLim; i++) {
-    strip.setPixelColor( i, colorVal, 0, colorVal);
+    strip.setPixelColor( i, 255, 0, 255);
   }
-  for (i = 10-upperLim; i < 10; i++) {
+  for (i = upperLim; i < 10; i++) {
     strip.setPixelColor( i, 0, 0, 0);
   }
   
   colorVal = spectrumArray[1];
-  upperLim = map(colorVal,0,255,10,20);
-  Serial.print("upperlim: ");
-  Serial.print(upperLim);
-  Serial.print("\n");
-  for (i = 10; i < upperLim; i++) {
-    strip.setPixelColor( i, colorVal, 0, 0);
+  upperLim = map(colorVal,0,100,0,10);
+  for (i = 10; i < 10+upperLim; i++) {
+    strip.setPixelColor( i, 0, 20, 150);
   }
-  for (i = 20-upperLim; i < 20; i++) {
+  for (i = 10+upperLim; i < 20; i++) {
     strip.setPixelColor( i, 0, 0, 0);
-    Serial.print("i: ");
-    Serial.print(i);
-    Serial.print(" ");
   }
-  
   colorVal = spectrumArray[2];
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 20; i < 30; i++) {
-    strip.setPixelColor( i, 0, 0, colorVal);
+  upperLim = map(colorVal,0,100,0,10);
+  for (i = 20; i < 20+upperLim; i++) {
+    strip.setPixelColor( i, 0, 255, 200);
   }
-  
+  for (i = 20+upperLim; i < 30; i++) {
+    strip.setPixelColor( i, 0, 0, 0);
+  }
+
   colorVal = spectrumArray[3];
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 30; i < 40; i++) {
-    strip.setPixelColor( i, colorVal, 0, 0 );
+  upperLim = map(colorVal,0,100,0,10);
+  for (i = 30; i < 30+upperLim; i++) {
+    strip.setPixelColor( i, 255, 0, 0);
+  }
+  for (i = 30+upperLim; i < 40; i++) {
+    strip.setPixelColor( i, 0, 0, 0);
   }
   
-  colorVal = spectrumArray[4];
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 40; i < 50; i++) {
-    strip.setPixelColor( i, 0, colorVal, 0);
+
+   colorVal = spectrumArray[4];
+  upperLim = map(colorVal,0,100,0,10);
+  for (i = 40; i < 40+upperLim; i++) {
+    strip.setPixelColor( i, 0, 255, 0);
   }
-  colorVal = spectrumArray[5];
-  Serial.print(colorVal);
-  Serial.print(" ");
-  for (i = 50; i < 60; i++) {
-    strip.setPixelColor( i, colorVal, colorVal, 0);
+  for (i = 40+upperLim; i < 50; i++) {
+    strip.setPixelColor( i, 0, 0, 0);
   }
+    colorVal = spectrumArray[5];
+  upperLim = map(colorVal,0,100,0,10);
+  for (i = 50; i < 50+upperLim; i++) {
+    strip.setPixelColor( i, 0, 0, 255);
+  }
+  for (i = 50+upperLim; i < 60; i++) {
+    strip.setPixelColor( i, 0, 0, 0);
+  }
+
   strip.show();
-  delay(5);
+  delay(1);
 }
 
 void loop()
