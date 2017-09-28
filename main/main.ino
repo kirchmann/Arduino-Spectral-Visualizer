@@ -6,8 +6,9 @@ int analogPin = A0;    // read from multiplexer using analog input 0
 int resetPin = 7;      // reset is attached to digital pin 3
 int strobePin = 8;     // strobe is attached to digital pin 2
 #define PIN_LEDSTRIP 9 // Digital signal connected to green wire on LED strip, white wire GND, red wire 5V
-long spectrumValue[7];  // to hold analog values
+long spectrumValue[7]; // to hold analog values
 int maxVal = 1023;     // max of all spectrumValue
+int potentiometer = A1;// read value from potentiometer to set threshold
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -31,6 +32,7 @@ void setup()
   pinMode(analogPin, INPUT);
   pinMode(strobePin, OUTPUT);
   pinMode(resetPin, OUTPUT);
+  pinMode(potentiometer, INPUT);
   digitalWrite(resetPin, HIGH);
   delay(1);
   digitalWrite(resetPin, LOW);
@@ -42,7 +44,11 @@ void setup()
 
 void readSpectrum(long *spectrumArray)
 {
-  int threshold = 21;
+  int threshold = map(analogRead(potentiometer), 0,1023,0,100);
+  Serial.print("pot: ");
+  Serial.print(threshold);
+  Serial.println();
+  //int threshold = 21;
   digitalWrite(resetPin, HIGH);
   delay(5);
   digitalWrite(resetPin, LOW);
@@ -65,7 +71,7 @@ void updateLEDS(long *spectrumArray, int max )
   int upperLim;
   int maxVal = 80;
   int colorVal = spectrumArray[0];
-  upperLim = map(colorVal,0,70,0,10);
+  upperLim = map(colorVal,0,70,0,10); //after testing realized that I need more sensitivity here 
   for (i = 0; i < upperLim; i++) {
     strip.setPixelColor( i, 255, 0, 255);
   }
